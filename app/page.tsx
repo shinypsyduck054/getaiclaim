@@ -360,6 +360,13 @@ export default function Home() {
             Generate My Response — $19
           </button>
         </section>
+
+        <footer className="border-t border-gray-200 bg-white py-8">
+          <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
+            <span>© {new Date().getFullYear()} FightAClaim · All rights reserved</span>
+            <a href="mailto:support@fightaclaim.com" className="hover:text-gray-600 transition-colors">support@fightaclaim.com</a>
+          </div>
+        </footer>
       </div>
     )
   }
@@ -682,6 +689,12 @@ export default function Home() {
             </button>
           </div>
         </main>
+        <footer className="border-t border-gray-200 bg-white py-6 mt-8">
+          <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
+            <span>© {new Date().getFullYear()} FightAClaim · All rights reserved</span>
+            <a href="mailto:support@fightaclaim.com" className="hover:text-gray-600 transition-colors">support@fightaclaim.com</a>
+          </div>
+        </footer>
       </div>
     )
   }
