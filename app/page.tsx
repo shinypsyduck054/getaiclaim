@@ -302,7 +302,7 @@ export default function Home() {
   // ---- Landing ----
   if (step === 'landing') {
     return (
-      <div className="min-h-screen bg-white">
+      <div>
         {/* Nav */}
         <header style={{ backgroundColor: '#0D1B2A' }} className="sticky top-0 z-10">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
