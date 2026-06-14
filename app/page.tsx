@@ -17,12 +17,15 @@ interface FormData {
   itemName: string
   trackingNumber: string
   buyerMessage: string
+  asin: string
+  ebayItemNumber: string
+  shopName: string
 }
 
 const PLATFORMS = {
-  amazon: { label: 'Amazon', sub: 'A-to-Z Guarantee', color: 'bg-orange-50 border-orange-300 text-orange-800' },
-  ebay: { label: 'eBay', sub: 'Money Back Guarantee', color: 'bg-blue-50 border-blue-300 text-blue-800' },
-  etsy: { label: 'Etsy', sub: 'Purchase Protection', color: 'bg-orange-50 border-amber-300 text-amber-800' },
+  amazon: { label: 'Amazon', sub: 'A-to-Z Guarantee', color: 'bg-orange-50 border-orange-300 text-orange-800', selectedColor: 'border-orange-500 bg-orange-50 text-orange-900' },
+  ebay: { label: 'eBay', sub: 'Money Back Guarantee', color: 'bg-blue-50 border-blue-300 text-blue-800', selectedColor: 'border-blue-500 bg-blue-50 text-blue-900' },
+  etsy: { label: 'Etsy', sub: 'Purchase Protection', color: 'bg-orange-50 border-amber-300 text-amber-800', selectedColor: 'border-[#F1641E] bg-orange-50 text-orange-900' },
 }
 
 const CLAIM_TYPES = {
@@ -193,6 +196,9 @@ export default function Home() {
     itemName: '',
     trackingNumber: '',
     buyerMessage: '',
+    asin: '',
+    ebayItemNumber: '',
+    shopName: '',
   })
   const [result, setResult] = useState<{ letter: string; checklist: string[] } | null>(null)
   const [activeDoc, setActiveDoc] = useState<'letter' | 'checklist'>('letter')
@@ -418,7 +424,7 @@ export default function Home() {
                   <button
                     key={key}
                     onClick={() => setForm(f => ({ ...f, platform: key }))}
-                    className={`border-2 rounded-xl p-3 text-center transition-all ${form.platform === key ? 'border-[#DC143C] bg-red-50 text-red-900' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}
+                    className={`border-2 rounded-xl p-3 text-center transition-all ${form.platform === key ? p.selectedColor : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}
                   >
                     <div className="font-bold">{p.label}</div>
                     <div className="text-xs opacity-70 mt-0.5">{p.sub}</div>
@@ -430,15 +436,20 @@ export default function Home() {
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">What type of claim?</label>
               <div className="space-y-2">
-                {(Object.entries(CLAIM_TYPES) as [ClaimType, string][]).map(([key, label]) => (
-                  <button
-                    key={key}
-                    onClick={() => setForm(f => ({ ...f, claimType: key }))}
-                    className={`w-full text-left border-2 rounded-xl px-4 py-3 transition-all ${form.claimType === key ? 'border-[#DC143C] bg-red-50 text-red-900 font-semibold' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                {(Object.entries(CLAIM_TYPES) as [ClaimType, string][]).map(([key, label]) => {
+                  const displayLabel = form.platform === 'ebay' && key === 'not_as_described'
+                    ? 'Significantly Not as Described (SNAD)'
+                    : label
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setForm(f => ({ ...f, claimType: key }))}
+                      className={`w-full text-left border-2 rounded-xl px-4 py-3 transition-all ${form.claimType === key ? 'border-[#DC143C] bg-red-50 text-red-900 font-semibold' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}
+                    >
+                      {displayLabel}
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -454,6 +465,51 @@ export default function Home() {
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC143C] focus:border-transparent"
               />
             </div>
+
+            {form.platform === 'amazon' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ASIN <span className="text-gray-400 font-normal">(optional -- strengthens your case)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. B08N5WRWNW"
+                  value={form.asin}
+                  onChange={e => setForm(f => ({ ...f, asin: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC143C] focus:border-transparent"
+                />
+              </div>
+            )}
+
+            {form.platform === 'ebay' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  eBay Item Number <span className="text-gray-400 font-normal">(12-digit listing number, optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 123456789012"
+                  value={form.ebayItemNumber}
+                  onChange={e => setForm(f => ({ ...f, ebayItemNumber: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC143C] focus:border-transparent"
+                />
+              </div>
+            )}
+
+            {form.platform === 'etsy' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Your Etsy shop name <span className="text-gray-400 font-normal">(used in the response header)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. VintageTreasuresShop"
+                  value={form.shopName}
+                  onChange={e => setForm(f => ({ ...f, shopName: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#DC143C] focus:border-transparent"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Item name</label>
@@ -694,7 +750,7 @@ export default function Home() {
                 setResult(null)
                 setPaymentIntentId(null)
                 generateCalled.current = false
-                setForm({ platform: 'amazon', claimType: 'not_received', orderId: '', itemName: '', trackingNumber: '', buyerMessage: '' })
+                setForm({ platform: 'amazon', claimType: 'not_received', orderId: '', itemName: '', trackingNumber: '', buyerMessage: '', asin: '', ebayItemNumber: '', shopName: '' })
               }}
               className="text-[#DC143C] hover:text-[#b01030] text-sm font-medium"
             >

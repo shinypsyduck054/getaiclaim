@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   const anthropic = new Anthropic()
   try {
-    const { paymentIntentId, platform, claimType, orderId, itemName, trackingNumber, buyerMessage } = await req.json()
+    const { paymentIntentId, platform, claimType, orderId, itemName, trackingNumber, buyerMessage, asin, ebayItemNumber, shopName } = await req.json()
 
     // Verify payment succeeded before generating
     const pi = await stripe.paymentIntents.retrieve(paymentIntentId)
@@ -59,6 +59,9 @@ Order ID: ${orderId || 'not provided'}
 Item name: ${itemName || 'not provided'}
 Tracking number: ${trackingNumber || 'not provided'}
 Buyer's claim message: ${buyerMessage || 'not provided'}
+${platform === 'amazon' && asin ? `ASIN: ${asin}` : ''}
+${platform === 'ebay' && ebayItemNumber ? `eBay Item Number: ${ebayItemNumber}` : ''}
+${platform === 'etsy' && shopName ? `Etsy Shop Name: ${shopName}` : ''}
 Date: ${today}
 
 The letter must be addressed to the ${platformLabel} Seller Performance Team and reference the specific order and platform guarantee by name. End with a formal resolution request.`,
